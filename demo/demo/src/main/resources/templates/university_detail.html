@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chi tiết trường đại học</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+</head>
+<body>
+<h2 th:text="'Trường: ' + ${university.name}"></h2>
+
+<table id="pointTable" class="display">
+    <thead>
+    <tr>
+        <th>Ngành</th>
+        <th th:each="year : ${years}" th:text="${year}" class="sortable"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${fieldData}">
+        <td th:text="${entry.key}"></td>
+        <td th:each="year : ${years}" th:text="${entry.value.get(year) ?: '-'}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#pointTable').DataTable();
+    });
+</script>
+</body>
+</html>

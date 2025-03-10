@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách trường đại học</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+<h2>Danh sách trường đại học</h2>
+
+<input type="text" id="search" placeholder="Tìm kiếm trường..." class="form-control my-3" onkeyup="filterTable()">
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Mã</th>
+        <th>Tên trường</th>
+        <th>Chi tiết</th>
+    </tr>
+    </thead>
+    <tbody id="universityTable">
+    <tr th:each="university : ${universities}">
+        <td th:text="${university.code}"></td>
+        <td th:text="${university.name}"></td>
+        <td>
+            <a th:href="@{/points(id=${university.id})}" class="btn btn-primary">Xem điểm</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    function filterTable() {
+        let input = document.getElementById("search").value.toLowerCase();
+        let rows = document.querySelectorAll("#universityTable tr");
+
+        rows.forEach(row => {
+            let name = row.cells[1].innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+</script>
+</body>
+</html>
