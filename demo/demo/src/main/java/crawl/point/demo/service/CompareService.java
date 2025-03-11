@@ -33,14 +33,10 @@ public class CompareService {
                         Collectors.toMap(
                                 PointByYear::getYear,
                                 p -> p.getFieldOfStudies().stream()
-                                        .filter(f -> f.getCode().equals(fieldCode))
+                                        .filter(f -> f.getFieldId().equals(fieldCode))
                                         .map(f -> PointTransfer.transferPoint(f.getPoint()) + "")
                                         .findFirst()
                                         .orElse("-"))));
-    }
-
-    public List<PointByYear> getPointByYears(String fieldCode, List<Integer> universityIds) {
-        return pointByYearRepository.findByUniversityCodeInAndFieldCode(universityIds, fieldCode);
     }
 
     public List<Integer> getAndSortYears(List<PointByYear> points) {

@@ -15,7 +15,6 @@ public class FieldOfStudyCacheService {
 
     private final PointByYearRepository pointByYearRepository;
     private final Cache<String, Set<Integer>> compareFieldCache;
-    private final Cache<String, Integer> uniqueFieldCache;
     @Getter
     private final Map<String, String> codeToFieldName = new HashMap<>();
 
@@ -24,7 +23,6 @@ public class FieldOfStudyCacheService {
                                     Cache<String, Integer> uniqueFieldCache) {
         this.pointByYearRepository = pointByYearRepository;
         this.compareFieldCache = compareFieldCache;
-        this.uniqueFieldCache = uniqueFieldCache;
     }
 
     @PostConstruct
@@ -41,11 +39,11 @@ public class FieldOfStudyCacheService {
             int universityId = point.getUniversityCode();
             for (FieldOfStudy field : point.getFieldOfStudies()) {
                 fieldToUniversities
-                        .computeIfAbsent(field.getCode(), k -> new HashSet<>())
+                        .computeIfAbsent(field.getFieldId(), k -> new HashSet<>())
                         .add(universityId);
 
                 // Chỉ lưu tên ngành nếu chưa có
-                codeToFieldName.putIfAbsent(field.getCode(), field.getFieldName());
+                codeToFieldName.putIfAbsent(field.getFieldId(), field.getFieldName());
             }
         }
 
@@ -53,8 +51,6 @@ public class FieldOfStudyCacheService {
         for (Map.Entry<String, Set<Integer>> entry : fieldToUniversities.entrySet()) {
             if (entry.getValue().size() >= 2) {
                 compareFieldCache.put(entry.getKey(), entry.getValue());
-            } else {
-                uniqueFieldCache.put(entry.getKey(), entry.getValue().iterator().next());
             }
         }
     }

@@ -4,6 +4,8 @@ import com.github.benmanes.caffeine.cache.Cache;
 import crawl.point.demo.entity.PointByYear;
 import crawl.point.demo.service.CompareService;
 import crawl.point.demo.service.FieldOfStudyCacheService;
+import crawl.point.demo.service.PointService;
+import crawl.point.demo.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,6 +26,8 @@ public class CompareController {
     FieldOfStudyCacheService fieldOfStudyCacheService;
     @Autowired
     CompareService compareService;
+    @Autowired
+    PointService pointService;
 
     @GetMapping
     public String comparePage(Model model) {
@@ -44,7 +48,7 @@ public class CompareController {
         }
 
         // Lấy danh sách điểm ngành theo năm
-        List<PointByYear> points = compareService.getPointByYears(fieldCode, universityIds);
+        List<PointByYear> points = pointService.findByUniversityCodeInAndFieldCode(Constant.TSA_NAME, universityIds, fieldCode);
 
         // Trả về JSON
         return ResponseEntity.ok(Map.of(

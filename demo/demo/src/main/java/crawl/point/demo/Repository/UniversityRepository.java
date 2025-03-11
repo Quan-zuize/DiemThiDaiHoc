@@ -8,7 +8,5 @@ import java.util.Collection;
 import java.util.List;
 
 public interface UniversityRepository extends MongoRepository<University, String> {
-    University findUniversityByCode(String code);
-
     List<University> findByIdIn(Collection<Integer> id);
 }

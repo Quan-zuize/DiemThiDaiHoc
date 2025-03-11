@@ -35,7 +35,7 @@ public class UniversityController {
         );
 
         List<PointByYear> points = mongoTemplate.find(
-                Query.query(Criteria.where("universityCode").is(id)), PointByYear.class
+                Query.query(Criteria.where("universityCode").is(id)), PointByYear.class, "DanhGiaTuDuy"
         );
 
         // Tạo danh sách năm học từ dữ liệu

@@ -1,4 +1,4 @@
-package crawl.point.demo.service;
+package crawl.point.demo.crawl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
