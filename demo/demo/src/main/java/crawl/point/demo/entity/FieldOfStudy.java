@@ -1,4 +1,4 @@
-package crawl.point.demo.dto;
+package crawl.point.demo.entity;
 
 import lombok.Data;
 
@@ -8,5 +8,6 @@ public class FieldOfStudy {
     String fieldName;
     String SubjectCombine;
     String point;
+    String code;
     String note;
 }

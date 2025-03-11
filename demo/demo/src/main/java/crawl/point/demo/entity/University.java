@@ -1,4 +1,4 @@
-package crawl.point.demo.dto;
+package crawl.point.demo.entity;
 
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;

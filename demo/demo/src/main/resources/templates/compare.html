@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>So sánh điểm ngành</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>So sánh điểm các trường theo ngành</h2>
+
+    <!-- Dropdown chọn ngành -->
+    <div class="mb-3">
+        <label for="fieldSelect" class="form-label">Chọn ngành:</label>
+        <select id="fieldSelect" name="fieldCode">-->
+            <option value="">Chọn ngành...</option>
+            <option th:each="entry : ${fields.entrySet()}"
+                    th:value="${entry.key}"
+                    th:text="|[${entry.key}] ${fieldNames.get(entry.key)}|">
+            </option>
+        </select>
+    </div>
+
+    <!-- Nút So Sánh -->
+    <button id="compareBtn" class="btn btn-primary">So sánh</button>
+
+    <!-- Kết quả hiển thị -->
+    <div class="mt-4">
+        <h4 id="fieldName"></h4>
+        <div id="errorMsg" class="alert alert-danger d-none"></div>
+
+        <!-- Bảng kết quả -->
+        <table id="resultTable" class="table table-bordered table-striped d-none">
+            <thead>
+            <tr id="yearHeader">
+                <th>Trường</th> <!-- Cột đầu tiên là tên trường -->
+            </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#fieldSelect').select2({
+            placeholder: "Nhập để tìm ngành...",
+            allowClear: true
+        });
+
+        let table = $('#resultTable').DataTable({
+            info: false,
+            ordering: false,
+            paging: false,
+            searching: false
+        });
+
+        $("#compareBtn").click(function () {
+            var fieldCode = $("#fieldSelect").val();
+            if (!fieldCode) {
+                alert("Vui lòng chọn ngành để so sánh.");
+                return;
+            }
+
+            $.ajax({
+                url: "/compare/result",
+                type: "POST",
+                data: { fieldCode: fieldCode },
+                success: function (response) {
+                    if (response.error) {
+                        $("#errorMsg").removeClass("d-none").text(response.error);
+                        $("#resultTable").addClass("d-none");
+                        return;
+                    }
+
+                    console.log("📌 Dữ liệu từ server:", response);
+
+                    // Xóa dữ liệu cũ
+                    table.clear().destroy();
+                    $("#yearHeader").empty().append("<th>Trường</th>"); // Reset tiêu đề cột
+                    $("#resultBody").empty(); // Xóa tbody để tránh lỗi trống
+                    $("#fieldName").text(response.fieldName); // Hiển thị tên ngành
+
+                    // Cập nhật tiêu đề cột (năm)
+                    response.years.forEach(year => {
+                        $("#yearHeader").append(`<th>${year}</th>`);
+                    });
+
+                    if (!response.universityPoints || Object.keys(response.universityPoints).length === 0) {
+                        $("#errorMsg").removeClass("d-none").text("Không có dữ liệu phù hợp.");
+                        $("#resultTable").addClass("d-none");
+                        return;
+                    }
+
+                    // Thêm dữ liệu vào bảng
+                    Object.entries(response.universityPoints).forEach(([universityName, points]) => {
+                        let rowHtml = `<tr><td>${universityName}</td>`; // Cột đầu tiên là tên trường
+                        response.years.forEach(year => {
+                            rowHtml += `<td>${points[year] || '-'}</td>`; // Điểm theo năm
+                        });
+                        rowHtml += `</tr>`;
+                        $("#resultBody").append(rowHtml);
+                    });
+
+                    // Cấu hình lại DataTable với số cột động
+                    table = $('#resultTable').DataTable({
+                        "paging": false,
+                        "ordering": true,
+                        "searching": false,
+                        "order": [],
+                        "destroy": true,
+                        "columns": [{"title": "Trường"}].concat(response.years.map(y => ({"title": y.toString()}))), // Chuyển năm sang string
+                        "columnDefs": [{ "orderable": false, "targets": 0 }]
+                    });
+
+                    // Hiển thị bảng
+                    $("#resultTable").removeClass("d-none");
+                    $("#errorMsg").addClass("d-none");
+                },
+                error: function () {
+                    $("#errorMsg").removeClass("d-none").text("Lỗi khi lấy dữ liệu.");
+                    $("#resultTable").addClass("d-none");
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

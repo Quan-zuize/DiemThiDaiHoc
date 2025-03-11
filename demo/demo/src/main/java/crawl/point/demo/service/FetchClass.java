@@ -2,7 +2,7 @@ package crawl.point.demo.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import crawl.point.demo.dto.University;
+import crawl.point.demo.entity.University;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

@@ -1,4 +1,4 @@
-package crawl.point.demo.dto;
+package crawl.point.demo.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@Document(collection = "DiemChuan")
 public class PointByYear {
     int universityCode;
     int year;

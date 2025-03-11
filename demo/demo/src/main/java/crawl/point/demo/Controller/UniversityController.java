@@ -1,8 +1,9 @@
 package crawl.point.demo.Controller;
 
-import crawl.point.demo.dto.FieldOfStudy;
-import crawl.point.demo.dto.PointByYear;
-import crawl.point.demo.dto.University;
+import crawl.point.demo.entity.FieldOfStudy;
+import crawl.point.demo.entity.PointByYear;
+import crawl.point.demo.entity.University;
+import crawl.point.demo.utils.PointTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -43,11 +44,11 @@ public class UniversityController {
                 .collect(Collectors.toCollection(TreeSet::new)); // Sắp xếp theo năm
 
         // Gom nhóm dữ liệu theo ngành
-        Map<String, Map<Integer, String>> fieldData = new LinkedHashMap<>();
+        Map<String, Map<Integer, Double>> fieldData = new LinkedHashMap<>();
         for (PointByYear point : points) {
             for (FieldOfStudy field : point.getFieldOfStudies()) {
                 fieldData.putIfAbsent(field.getFieldName(), new HashMap<>());
-                fieldData.get(field.getFieldName()).put(point.getYear(), field.getPoint());
+                fieldData.get(field.getFieldName()).put(point.getYear(), PointTransfer.transferPoint(field.getPoint()));
             }
         }
 

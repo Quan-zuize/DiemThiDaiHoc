@@ -2,9 +2,9 @@ package crawl.point.demo.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import crawl.point.demo.dto.FieldOfStudy;
-import crawl.point.demo.dto.PointByYear;
-import crawl.point.demo.dto.University;
+import crawl.point.demo.entity.FieldOfStudy;
+import crawl.point.demo.entity.PointByYear;
+import crawl.point.demo.entity.University;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -75,8 +75,8 @@ public class FetchPoint {
                 field.setFieldId(node.get("code").asText());
                 field.setFieldName(node.get("name").asText());
                 field.setPoint(node.get("mark").asText());
+                field.setCode(node.get("code").asText());
                 field.setSubjectCombine(node.has("block") ? node.get("block").asText() : null);
-                field.setNote(node.has("introtext") ? node.get("introtext").asText() : null);
                 fieldOfStudies.add(field);
             }
 
