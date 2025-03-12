@@ -1,4 +1,4 @@
-package crawl.point.demo.Repository;
+package crawl.point.demo.repository;
 
 import crawl.point.demo.entity.PointByYear;
 import org.springframework.data.mongodb.repository.MongoRepository;

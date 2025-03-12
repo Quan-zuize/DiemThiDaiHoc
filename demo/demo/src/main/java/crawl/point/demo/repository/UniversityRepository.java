@@ -1,12 +1,11 @@
-package crawl.point.demo.Repository;
+package crawl.point.demo.repository;
 
 import crawl.point.demo.entity.University;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import javax.swing.*;
 import java.util.Collection;
 import java.util.List;
 
-public interface UniversityRepository extends MongoRepository<University, String> {
+public interface UniversityRepository extends MongoRepository<University, Integer> {
     List<University> findByIdIn(Collection<Integer> id);
 }

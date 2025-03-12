@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PointService {
@@ -25,6 +26,11 @@ public class PointService {
                 .and("fieldOfStudies.code").is(fieldCode));
 
         return mongoTemplate.find(query, PointByYear.class, collectionName);
+    }
+
+    @Async
+    public CompletableFuture<List<PointByYear>> getAllPointByYear(String collectionName) {
+        return CompletableFuture.completedFuture(mongoTemplate.findAll(PointByYear.class, collectionName));
     }
 
     @Async

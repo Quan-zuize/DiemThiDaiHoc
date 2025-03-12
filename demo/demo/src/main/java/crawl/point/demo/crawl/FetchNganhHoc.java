@@ -2,11 +2,12 @@ package crawl.point.demo.crawl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import crawl.point.demo.Repository.UniversityRepository;
+import crawl.point.demo.repository.UniversityRepository;
 import crawl.point.demo.entity.FieldOfStudy;
 import crawl.point.demo.entity.PointByYear;
 import crawl.point.demo.entity.University;
 import crawl.point.demo.service.PointService;
+import crawl.point.demo.utils.Constant;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -15,7 +16,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static crawl.point.demo.utils.Constant.*;
 
@@ -31,6 +34,9 @@ public class FetchNganhHoc {
     private final OkHttpClient client = new OkHttpClient(); // OkHttp Client
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final Set<String> listFieldId = new HashSet<>();
+    private List<FieldOfStudy> fieldOfStudies = new ArrayList<>();
+
     public void fetchNganhHoc() {
         List<University> universities = universityRepository.findAll();
 
@@ -45,6 +51,9 @@ public class FetchNganhHoc {
             }
             System.out.println("Đã lấy xong dữ liệu từ trường: " + uni.getName());
         }
+        System.out.println("Đã lấy tổng cộng " + fieldOfStudies.size() + " ngành học");
+        mongoTemplate.dropCollection(FieldOfStudy.class);
+        mongoTemplate.insert(fieldOfStudies, NganhHoc);
     }
 
     private boolean crawlNganhVaDiemTHPT(String url, int year, int code) {
@@ -61,34 +70,14 @@ public class FetchNganhHoc {
                 return false;
             }
 
-            List<FieldOfStudy> fieldOfStudies = new ArrayList<>();
             for (JsonNode node : dataNode) {
                 FieldOfStudy fieldOfStudy = new FieldOfStudy();
                 fieldOfStudy.setFieldId(node.get("code").asText());
                 fieldOfStudy.setFieldName(node.get("name").asText());
-                pointService.saveField(fieldOfStudy, NganhHoc);
-
-                if(node.has("mark") && node.get("mark").asText().equals("0")) {
-                    continue;
+                if (listFieldId.add(fieldOfStudy.getFieldId())) {
+                    fieldOfStudies.add(fieldOfStudy);
                 }
-
-                FieldOfStudy field = new FieldOfStudy();
-                field.setFieldId(node.get("code").asText());
-                field.setFieldName(node.get("name").asText());
-                field.setPoint(node.get("mark").asText());
-                if(!node.get("block").asText().isEmpty()) {
-                    field.setSubjectCombine(node.get("block").asText());
-                }
-                if(!node.get("introtext").asText().isEmpty()){
-                    field.setNote(node.get("introtext").asText());
-                }
-                fieldOfStudies.add(field);
             }
-
-            if(fieldOfStudies.isEmpty()) {
-                return false;
-            }
-            pointService.savePointByYear(new PointByYear(code, year, fieldOfStudies), THPT_NAME);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);

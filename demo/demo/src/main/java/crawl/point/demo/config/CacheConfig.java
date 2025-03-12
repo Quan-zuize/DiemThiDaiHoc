@@ -12,17 +12,32 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     @Bean
-    public Cache<String, Set<Integer>> compareFieldCache() {
+    public Cache<String, Set<Integer>> complexTsaCache() {
         return Caffeine.newBuilder()
-                .expireAfterWrite(12, TimeUnit.HOURS)
+                .expireAfterWrite(1, TimeUnit.HOURS)
                 .maximumSize(1000)
                 .build();
     }
 
     @Bean
-    public Cache<String, Integer> uniqueFieldCache() {
+    public Cache<String, Integer> uniqueTsaCache() {
         return Caffeine.newBuilder()
-                .expireAfterWrite(12, TimeUnit.HOURS)
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .maximumSize(1000)
+                .build();
+    }
+
+    @Bean
+    public Cache<String, Set<Integer>> complexTHPTCache() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .maximumSize(1000)
+                .build();
+    }
+
+    @Bean Cache<String, Integer> uniqueTHPTCache() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(1, TimeUnit.HOURS)
                 .maximumSize(1000)
                 .build();
     }

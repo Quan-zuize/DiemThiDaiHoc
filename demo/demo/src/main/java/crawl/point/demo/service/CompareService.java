@@ -1,8 +1,7 @@
 package crawl.point.demo.service;
 
-import crawl.point.demo.Repository.PointByYearRepository;
-import crawl.point.demo.Repository.UniversityRepository;
-import crawl.point.demo.entity.FieldOfStudy;
+import crawl.point.demo.repository.PointByYearRepository;
+import crawl.point.demo.repository.UniversityRepository;
 import crawl.point.demo.entity.PointByYear;
 import crawl.point.demo.entity.University;
 import crawl.point.demo.utils.PointTransfer;

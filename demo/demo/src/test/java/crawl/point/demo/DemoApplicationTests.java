@@ -20,7 +20,7 @@ class DemoApplicationTests {
     @Test
     void contextLoads() throws IOException {
 //        fetchPoint.crawlPointUni();
-//        fetchNganhHoc.fetchNganhHoc();
+        fetchNganhHoc.fetchNganhHoc();
     }
 
 }

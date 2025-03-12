@@ -21,7 +21,7 @@ import java.util.*;
 @Controller
 public class CompareController {
     @Autowired
-    Cache<String, Set<Integer>> compareFieldCache;
+    Cache<String, Set<Integer>> complexTsaCache;
     @Autowired
     FieldOfStudyCacheService fieldOfStudyCacheService;
     @Autowired
@@ -31,7 +31,7 @@ public class CompareController {
 
     @GetMapping
     public String comparePage(Model model) {
-        Map<String, Set<Integer>> fields = compareFieldCache.asMap();
+        Map<String, Set<Integer>> fields = complexTsaCache.asMap();
         Map<String, String> fieldNames = fieldOfStudyCacheService.getCodeToFieldName();
 
         model.addAttribute("fields", fields);
@@ -41,7 +41,7 @@ public class CompareController {
 
     @PostMapping("/result")
     public ResponseEntity<Map<String, Object>> compareField(@RequestParam("fieldCode") String fieldCode) {
-        List<Integer> universityIds = new ArrayList<>(Objects.requireNonNull(compareFieldCache.getIfPresent(fieldCode)));
+        List<Integer> universityIds = new ArrayList<>(Objects.requireNonNull(complexTsaCache.getIfPresent(fieldCode)));
 
         if (universityIds.isEmpty()) {
             return ResponseEntity.ok(Map.of("error", "Không có trường nào có ngành này để so sánh."));

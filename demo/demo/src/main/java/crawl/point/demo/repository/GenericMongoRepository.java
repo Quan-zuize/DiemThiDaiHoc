@@ -1,4 +1,4 @@
-package crawl.point.demo.Repository;
+package crawl.point.demo.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.NoRepositoryBean;
