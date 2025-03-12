@@ -1,93 +1,107 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Danh sách Ngành học</title>
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Danh sách Ngành Học</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        let timeout = null;
+        let initialKeyword = new URLSearchParams(window.location.search).get("keyword") || "";
+
+        function searchFields() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                let keyword = document.getElementById("searchBox").value.trim();
+                if (keyword === initialKeyword) return;
+
+                if (keyword === "" && initialKeyword.length > 0) {
+                    initialKeyword = keyword;
+                    window.location.href = "/fields?page=1"; // Nếu rỗng, về danh sách gốc
+                } else {
+                    initialKeyword = keyword;
+                    window.location.href = `/fields?page=1&keyword=${encodeURIComponent(keyword)}`;
+                }
+            }, 700);
+        }
+
+    </script>
 </head>
 <body>
 <div class="container mt-4">
-  <h2 class="mb-4 text-center">Danh sách Ngành học</h2>
+    <!-- Nút quay lại trang chủ -->
+    <a href="/" class="btn btn-primary mb-3">Quay lại trang chủ</a>
+    <h2>Danh sách Ngành Học</h2>
+    <h5 class="mb-3">Tổng số ngành: <span th:text="${totalItems}"></span></h5>
+    <!-- Search Box -->
+    <input type="text" id="searchBox" class="form-control mb-3"
+           placeholder="Tìm kiếm ngành..." onkeyup="searchFields()"
+           th:value="${keyword}">
 
-  <!-- Search Bar -->
-  <div class="input-group mb-3">
-    <input type="text" id="searchInput" class="form-control"
-           placeholder="Nhập tên ngành học để tìm kiếm...">
-  </div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Tên Ngành</th>
+            <th>Thống kê TSA</th>
+            <th>Thống kê THPT</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stats : ${fieldStatsPage.content}">
+            <td th:text="${stats.fieldName}"></td>
+            <td th:if="${stats.tsaReport != null}">
+                <a th:if="${stats.tsaReport.contains('-')}"
+                   th:href="@{/fields/detail/{id}(id=${stats.fieldId}, type='tsa')}"
+                   th:text="${stats.tsaReport}"></a>
+                <span th:unless="${stats.tsaReport.contains('-')}" th:text="${stats.tsaReport}"></span>
+            </td>
+            <td th:unless="${stats.tsaReport != null}">-</td>
 
-  <!-- Table -->
-  <table class="table table-bordered table-hover">
-    <thead class="table-dark">
-    <tr>
-      <th>Mã ngành</th>
-      <th>Tên ngành</th>
-    </tr>
-    </thead>
-    <tbody id="fieldsTable">
-    <tr th:each="field : ${fields}">
-      <td th:text="${field.fieldId}"></td>
-      <td th:text="${field.fieldName}"></td>
-    </tr>
-    </tbody>
-  </table>
+            <td th:if="${stats.thptReport != null}">
+                <a th:if="${stats.thptReport.contains('-')}"
+                   th:href="@{/fields/detail/{id}(id=${stats.fieldId}, type='thpt')}"
+                   th:text="${stats.thptReport}"></a>
+                <span th:unless="${stats.thptReport.contains('-')}" th:text="${stats.thptReport}"></span>
+            </td>
+            <td th:unless="${stats.thptReport != null}">-</td>
 
-  <!-- Pagination -->
-  <div class="d-flex justify-content-between align-items-center">
-    <span id="pageInfo"></span>
-    <nav>
-      <ul class="pagination mb-0">
-        <li class="page-item"><a class="page-link" href="#" onclick="changePage(-1)">Trước</a></li>
-        <li class="page-item"><a class="page-link" href="#" onclick="changePage(1)">Tiếp</a></li>
-      </ul>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center">
+
+            <!-- Nút về trang đầu tiên -->
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{${baseUrl}(page=1, keyword=${keyword})}">Đầu</a>
+            </li>
+
+            <!-- Nút trang trước -->
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{${baseUrl}(page=${currentPage - 1}, keyword=${keyword})}">Trước</a>
+            </li>
+
+            <!-- Hiển thị 2 trang trước và 2 trang sau -->
+            <li th:each="pageNum : ${#numbers.sequence(currentPage - 2 > 1 ? currentPage - 2 : 1,
+                                                   currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}"
+                th:classappend="${pageNum == currentPage} ? 'active'" class="page-item">
+                <a class="page-link" th:href="@{${baseUrl}(page=${pageNum}, keyword=${keyword})}"
+                   th:text="${pageNum}"></a>
+            </li>
+
+            <!-- Nút trang kế tiếp -->
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{${baseUrl}(page=${currentPage + 1}, keyword=${keyword})}">Tiếp</a>
+            </li>
+
+            <!-- Nút về trang cuối cùng -->
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{${baseUrl}(page=${totalPages}, keyword=${keyword})}">Cuối</a>
+            </li>
+
+        </ul>
     </nav>
-  </div>
+
 </div>
-
-<script>
-  $(document).ready(function () {
-    let rowsPerPage = 10; // Số dòng mỗi trang
-    let allRows = $('#fieldsTable tr');
-    let filteredRows = allRows; // Danh sách dòng sau khi lọc
-    let currentPage = 1;
-
-    function showPage(page) {
-      let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-      currentPage = Math.max(1, Math.min(page, totalPages));
-
-      let start = (currentPage - 1) * rowsPerPage;
-      let end = start + rowsPerPage;
-
-      allRows.hide();
-      filteredRows.slice(start, end).show();
-
-      $("#pageInfo").text(`Trang ${currentPage} / ${totalPages || 1}`);
-    }
-
-    function filterTable() {
-      let searchText = $('#searchInput').val().toLowerCase();
-
-      // Lọc theo tên ngành
-      filteredRows = allRows.filter(function () {
-        let fieldName = $(this).find("td:nth-child(2)").text().toLowerCase();
-        return fieldName.includes(searchText);
-      });
-
-      // Cập nhật lại danh sách hiển thị
-      showPage(1);
-    }
-
-    $('#searchInput').on('input', function () {
-      filterTable();
-    });
-
-    window.changePage = function (step) {
-      showPage(currentPage + step);
-    };
-
-    showPage(1);
-  });
-</script>
 </body>
 </html>
