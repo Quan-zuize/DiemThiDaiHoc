@@ -91,7 +91,7 @@ public class FieldStatsService {
 
                 if (scoreList.size() == 1) {
                     // Nếu chỉ có 1 trường, hiển thị "Tên - Điểm" mà không lưu vào Map
-                    stats.setReport(isTsa, universityName + " - " + score);
+                    stats.setReport(isTsa, universityName + ": " + score);
                 } else {
                     // Nếu có nhiều trường, hiển thị min - max và LƯU vào Map
                     double minPoint = Collections.min(scoreList);

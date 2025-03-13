@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -52,15 +53,22 @@ public class FieldController {
         // Chọn map scores theo type
         Map<Integer, Double> universityScores = "tsa".equals(type) ? stats.getTsaUniversityScores() : stats.getThptUniversityScores();
 
+        List<UniversityScoreDTO> universityList = new ArrayList<>();
         if (universityScores == null || universityScores.isEmpty()) {
-            return "redirect:/fields"; // Nếu map rỗng, quay lại
+            String report;
+            if("tsa".equals(type)) {
+                report = stats.getTsaReport();
+            } else {
+                report = stats.getTsaReport();
+            }
+            universityList.add(new UniversityScoreDTO(report.split(":")[0], Double.parseDouble(report.split(":")[1])));
+        }else{
+            // Lấy danh sách các trường
+            universityList = universityScores.entrySet().stream()
+                    .map(entry -> new UniversityScoreDTO(fieldStatsService.getUniversityName(entry.getKey()), entry.getValue()))
+                    .sorted(Comparator.comparingDouble(UniversityScoreDTO::getScore).reversed()) // Sắp xếp giảm dần
+                    .collect(Collectors.toList());
         }
-
-        // Lấy danh sách các trường
-        List<UniversityScoreDTO> universityList = universityScores.entrySet().stream()
-                .map(entry -> new UniversityScoreDTO(fieldStatsService.getUniversityName(entry.getKey()), entry.getValue()))
-                .sorted(Comparator.comparingDouble(UniversityScoreDTO::getScore).reversed()) // Sắp xếp giảm dần
-                .collect(Collectors.toList());
 
         model.addAttribute("fieldName", stats.getFieldName());
         model.addAttribute("universityList", universityList);

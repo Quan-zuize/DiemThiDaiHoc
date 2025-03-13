@@ -7,18 +7,46 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 </head>
 <body>
+
 <h2 th:text="'Trường: ' + ${university.name}"></h2>
 
-<table id="pointTable" class="display">
+<!-- Hiển thị bảng TSA -->
+<h3>Điểm TSA</h3>
+<table id="tsaTable" class="display">
     <thead>
     <tr>
         <th>Ngành</th>
-        <th th:each="year : ${years}" th:text="${year}" class="sortable"></th>
+        <th th:each="year : ${years2}" th:text="${year}"></th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="entry : ${fieldData}">
-        <td th:text="${entry.key}"></td>
+    <tr th:each="entry : ${tsaFieldData}">
+        <td>
+            <a th:href="@{/fields/detail/{id}(id=${fieldIdMap[entry.key]}, type='tsa')}"
+               th:text="${entry.key}"
+               style="text-decoration: none; color: blue;"></a>
+        </td>
+        <td th:each="year : ${years2}" th:text="${entry.value.get(year) ?: '-'}"></td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<!-- Hiển thị bảng THPT -->
+<h3>Điểm THPT</h3>
+<table id="thptTable" class="display">
+    <thead>
+    <tr>
+        <th>Ngành</th>
+        <th th:each="year : ${years}" th:text="${year}"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${thptFieldData}">
+        <td>
+            <a th:href="@{/fields/detail/{id}(id=${fieldIdMap[entry.key]}, type='thpt')}"
+               th:text="${entry.key}"
+               style="text-decoration: none; color: blue;"></a>
+        </td>
         <td th:each="year : ${years}" th:text="${entry.value.get(year) ?: '-'}"></td>
     </tr>
     </tbody>
@@ -26,8 +54,9 @@
 
 <script>
     $(document).ready(function () {
-        $('#pointTable').DataTable();
+        $('#tsaTable, #thptTable').DataTable();
     });
 </script>
+
 </body>
 </html>
