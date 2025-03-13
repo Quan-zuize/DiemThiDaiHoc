@@ -43,7 +43,7 @@ public class FetchNganhHoc {
         for (University uni : universities) {
             boolean continueCrawl = true;
             int year = START_YEAR;
-            while (continueCrawl) {
+            while (year > 2022) {
                 String url = String.format(LIST_FIELD_OF_STUDY_API, uni.getId(), THPT_ID, year);
                 System.out.println("Fetching: " + url);
                 continueCrawl = crawlNganhVaDiemTHPT(url, year, uni.getId());

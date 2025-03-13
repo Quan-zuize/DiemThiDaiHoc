@@ -25,8 +25,8 @@ public class FieldOfStudyCacheService {
 
     @PostConstruct
     public void init() {
-        loadTsaCaches();
-        loadTHPTCache();
+//        loadTsaCaches();
+//        loadTHPTCache();
     }
     private CompletableFuture<Void> loadTsaCaches() {
         return pointService.getAllPointByYear(Constant.TSA_NAME) // Chạy bất đồng bộ
